@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Switch, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { api } from '../../services/api';
@@ -32,11 +32,13 @@ export default function SendNotification() {
 
     const handleSend = async () => {
         if (!title || !body) {
-            Alert.alert('Error', 'Please enter title and message');
+            if (Platform.OS === 'web') window.alert('Error: Please enter title and message');
+            else Alert.alert('Error', 'Please enter title and message');
             return;
         }
-        if (!isBroadcast && !userId && !isEditing) { // If editing, maybe we don't change targets
-            Alert.alert('Error', 'Please enter a User ID for single notification');
+        if (!isBroadcast && !userId && !isEditing) {
+            if (Platform.OS === 'web') window.alert('Error: Please enter a User ID for single notification');
+            else Alert.alert('Error', 'Please enter a User ID for single notification');
             return;
         }
 
@@ -47,7 +49,8 @@ export default function SendNotification() {
                     title,
                     body
                 });
-                Alert.alert('Success', 'Notification updated successfully');
+                if (Platform.OS === 'web') window.alert('Success: Notification updated successfully');
+                else Alert.alert('Success', 'Notification updated successfully');
             } else {
                 await api.post('/notifications', {
                     title,
@@ -55,11 +58,13 @@ export default function SendNotification() {
                     type: isBroadcast ? 'ALL' : 'SINGLE',
                     user_id: isBroadcast ? null : parseInt(userId)
                 });
-                Alert.alert('Success', 'Notification sent successfully');
+                if (Platform.OS === 'web') window.alert('Success: Notification sent successfully');
+                else Alert.alert('Success', 'Notification sent successfully');
             }
             router.back();
         } catch (error) {
-            Alert.alert('Error', 'Failed to send notification');
+            if (Platform.OS === 'web') window.alert('Error: Failed to send notification');
+            else Alert.alert('Error', 'Failed to send notification');
         } finally {
             setLoading(false);
         }

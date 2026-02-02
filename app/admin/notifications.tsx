@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
@@ -31,39 +31,47 @@ export default function NotificationsManagement() {
         }
     };
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotifications();
+        }, [])
+    );
+
     const deleteNotification = async (id: number) => {
-        Alert.alert(
-            'Delete Notification',
-            'Are you sure you want to delete this notification?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Delete',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await api.delete(`/notifications/${id}`);
-                            setNotifications(prev => prev.filter(n => n.id !== id));
-                        } catch (error) {
-                            Alert.alert('Error', 'Failed to delete notification');
+        if (Platform.OS === 'web') {
+            const confirm = window.confirm('Are you sure you want to delete this notification?');
+            if (confirm) {
+                try {
+                    await api.delete(`/notifications/${id}`);
+                    setNotifications(prev => prev.filter(n => n.id !== id));
+                } catch (error) {
+                    window.alert('Failed to delete notification');
+                }
+            }
+        } else {
+            Alert.alert(
+                'Delete Notification',
+                'Are you sure you want to delete this notification?',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                        text: 'Delete',
+                        style: 'destructive',
+                        onPress: async () => {
+                            try {
+                                await api.delete(`/notifications/${id}`);
+                                setNotifications(prev => prev.filter(n => n.id !== id));
+                            } catch (error) {
+                                Alert.alert('Error', 'Failed to delete notification');
+                            }
                         }
                     }
-                }
-            ]
-        );
+                ]
+            );
+        }
     };
 
-    const handleEdit = (notif: Notification) => {
-        router.push({
-            pathname: '/admin/send-notification',
-            params: {
-                id: notif.id,
-                editTitle: notif.title,
-                editBody: notif.body,
-                userId: notif.username ? 'USER_PROVIDED_ID_NOTE' : undefined // We don't have user_id easily in list, but let's just edit title/body
-            }
-        });
-    };
+
 
     return (
         <ScrollView style={styles.container}>
@@ -90,9 +98,6 @@ export default function NotificationsManagement() {
                             <View style={styles.cardHeader}>
                                 <Text style={styles.cardTitle}>{notif.title}</Text>
                                 <View style={styles.actionButtons}>
-                                    <TouchableOpacity onPress={() => handleEdit(notif)} style={styles.iconBtn}>
-                                        <MaterialIcons name="edit" size={20} color="#3498db" />
-                                    </TouchableOpacity>
                                     <TouchableOpacity onPress={() => deleteNotification(notif.id)} style={styles.iconBtn}>
                                         <MaterialIcons name="delete" size={20} color="#e74c3c" />
                                     </TouchableOpacity>
