@@ -1,0 +1,7 @@
+--- Starting Auth Flow Verification (Port 3001) ---
+
+1. Testing Registration for verify_1768562829442@example.com...
+❌ Registration Failed: {
+  "error": "Server error during registration",
+  "details": "column \"phone\" of relation \"users\" does not exist"
+}

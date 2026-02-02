@@ -1,0 +1,5 @@
+--- Starting Auth Flow Verification (Port 3001) ---
+
+1. Testing Registration for verify_1768562876723@example.com...
+✅ Registration Successful
+Token received: true

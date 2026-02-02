@@ -1,0 +1,106 @@
+Tables found: reports, faqs, awareness, users, notifications, policies, emergency_contacts, recovery_guides, categories
+
+Schema for reports:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+incident_date | text | NO
+incident_details | text | NO
+incident_type | text | YES
+is_financial_fraud | boolean | YES
+bank_name | text | YES
+transaction_id | text | YES
+transaction_date | text | YES
+fraud_amount | text | YES
+suspect_url | text | YES
+suspect_mobile | text | YES
+suspect_email | text | YES
+created_at | timestamp without time zone | YES
+user_id | integer | YES
+status | text | YES
+
+Schema for faqs:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+question | text | NO
+answer | text | NO
+created_at | timestamp without time zone | YES
+
+Schema for awareness:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+title | text | NO
+content | text | NO
+created_at | timestamp without time zone | YES
+updated_at | timestamp without time zone | YES
+image | text | YES
+
+Schema for users:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+username | text | NO
+email | text | NO
+password | character | NO
+created_at | timestamp without time zone | YES
+phone | character varying | YES
+gender | text | YES
+reset_otp | text | YES
+otp_expiry | timestamp without time zone | YES
+is_active | integer | YES
+
+Schema for notifications:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+title | text | NO
+body | text | NO
+type | text | YES
+user_id | integer | NO
+fcm_token | text | NO
+sent_by | integer | YES
+status | text | YES
+metadata | jsonb | YES
+created_at | timestamp without time zone | YES
+updated_at | timestamp without time zone | YES
+
+Schema for policies:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+title | text | YES
+content | text | YES
+
+Schema for emergency_contacts:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+team | text | NO
+priority | text | NO
+description | text | NO
+availability | text | NO
+phone | text | NO
+email | text | NO
+location | text | NO
+created_at | timestamp without time zone | YES
+updated_at | timestamp without time zone | YES
+
+Schema for recovery_guides:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+category_id | integer | YES
+guide | text | NO
+steps | text | YES
+created_at | timestamp without time zone | YES
+title | character varying | YES
+content | text | YES
+
+Schema for categories:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+name | text | NO
+created_at | timestamp without time zone | YES
