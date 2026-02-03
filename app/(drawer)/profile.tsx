@@ -165,6 +165,7 @@ export default function Profile() {
                             <Text style={styles.name}>{user?.username || 'User'}</Text>
                             <Text style={styles.email}>{user?.email || 'email@example.com'}</Text>
                             <Text style={[styles.email, { marginTop: -10 }]}>{user?.phone || 'No phone'}</Text>
+                            <Text style={[styles.email, { marginTop: -4 }]}>{user?.birthdate || 'No birthdate'}</Text>
                         </>
                     )}
 
