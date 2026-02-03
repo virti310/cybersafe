@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
     try {
         console.log('[API] Fetching all users...');
         console.log('[API] Fetching all users...');
-        const result = await dbPool.query('SELECT id, username, email, phone, gender, is_active, created_at FROM users ORDER BY created_at DESC');
+        const result = await dbPool.query('SELECT id, username, email, phone, gender, birthdate, is_active, created_at FROM users ORDER BY created_at DESC');
         console.log(`[API] Found ${result.rows.length} users.`);
         console.log(`[API] Found ${result.rows.length} users.`);
         res.json(result.rows);
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await dbPool.query('SELECT id, username, email, phone, gender, created_at FROM users WHERE id = $1', [id]);
+        const result = await dbPool.query('SELECT id, username, email, phone, gender, birthdate, created_at FROM users WHERE id = $1', [id]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'User not found' });

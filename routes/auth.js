@@ -9,7 +9,7 @@ const JWT_SECRET = 'your_jwt_secret_key_here'; // In production, use process.env
 
 // REGISTER
 router.post('/register', async (req, res) => {
-    const { name, email, phone, gender, password } = req.body;
+    const { name, email, phone, gender, birthdate, password } = req.body;
 
     if (!name || !email || !password) {
         return res.status(400).json({ error: 'Please provide all required fields' });
@@ -34,8 +34,8 @@ router.post('/register', async (req, res) => {
         // Let's try inserting all. If it errors, we'll know.
 
         const newUser = await dbPool.query(
-            'INSERT INTO users (username, email, password, phone, gender) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email, phone, gender',
-            [name, email, hashedPassword, phone, gender]
+            'INSERT INTO users (username, email, password, phone, gender, birthdate) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, email, phone, gender, birthdate',
+            [name, email, hashedPassword, phone, gender, birthdate]
         );
 
         // Generate Token

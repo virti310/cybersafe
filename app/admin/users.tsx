@@ -10,6 +10,7 @@ interface User {
     email: string;
     phone: string;
     gender: string;
+    birthdate?: string;
     is_active: number; // 0 or 1
 }
 
@@ -182,6 +183,10 @@ export default function UsersManagement() {
                                 <View style={styles.detailRow}>
                                     <Text style={styles.detailLabel}>Email:</Text>
                                     <Text style={styles.detailValue}>{selectedUser.email}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Birthdate:</Text>
+                                    <Text style={styles.detailValue}>{selectedUser.birthdate || 'N/A'}</Text>
                                 </View>
                                 <View style={styles.detailRow}>
                                     <Text style={styles.detailLabel}>Status:</Text>

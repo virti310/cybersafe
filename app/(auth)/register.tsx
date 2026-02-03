@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvo
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, Feather, FontAwesome5 } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import API_URL from '../../constants/API';
 import { Colors } from '../../constants/theme';
 
@@ -14,12 +15,15 @@ export default function Register() {
     const [gender, setGender] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [birthdate, setBirthdate] = useState('');
+    const [date, setDate] = useState(new Date());
+    const [showPicker, setShowPicker] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
-        if (!name || !email || !phone || !gender || !password || !confirmPassword) {
+        if (!name || !email || !phone || !gender || !password || !confirmPassword || !birthdate) {
             Alert.alert('Error', 'Please fill in all fields');
             return;
         }
@@ -33,14 +37,14 @@ export default function Register() {
             const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, phone, gender, password }),
+                body: JSON.stringify({ name, email, phone, gender, birthdate, password }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 Alert.alert('Success', 'Account created successfully');
-                router.replace('/(tabs)');
+                router.replace('/(auth)/login');
             } else {
                 Alert.alert('Error', data.error || 'Registration failed');
             }
@@ -51,6 +55,15 @@ export default function Register() {
             setLoading(false);
         }
     };
+
+    const onChangeDate = (event: any, selectedDate?: Date) => {
+        const currentDate = selectedDate || date;
+        setShowPicker(Platform.OS === 'ios');
+        setDate(currentDate);
+        setBirthdate(currentDate.toISOString().split('T')[0]);
+    };
+
+    const isWeb = Platform.OS === 'web';
 
     const GenderOption = ({ value, icon }: { value: string, icon: string }) => (
         <TouchableOpacity
@@ -145,6 +158,45 @@ export default function Register() {
                                 <GenderOption value="Female" icon="female" />
                                 <GenderOption value="Other" icon="genderless" />
                             </View>
+                        </View>
+
+                        {/* Birthdate */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Date of Birth</Text>
+                            {isWeb ? (
+                                <View style={styles.inputWrapper}>
+                                    <Feather name="calendar" size={20} color={Colors.light.icon} style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="YYYY-MM-DD"
+                                        placeholderTextColor={Colors.light.icon}
+                                        value={birthdate}
+                                        onChangeText={setBirthdate}
+                                    />
+                                </View>
+                            ) : (
+                                <>
+                                    <TouchableOpacity
+                                        style={styles.inputWrapper}
+                                        onPress={() => setShowPicker(true)}
+                                    >
+                                        <Feather name="calendar" size={20} color={Colors.light.icon} style={styles.inputIcon} />
+                                        <Text style={[styles.input, !birthdate && { color: Colors.light.icon, paddingTop: 16 }]}>
+                                            {birthdate || "Select Date (YYYY-MM-DD)"}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {showPicker && (
+                                        <DateTimePicker
+                                            testID="dateTimePicker"
+                                            value={date}
+                                            mode="date"
+                                            display="default"
+                                            onChange={onChangeDate}
+                                            maximumDate={new Date()}
+                                        />
+                                    )}
+                                </>
+                            )}
                         </View>
 
                         {/* Password */}
