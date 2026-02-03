@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Platform, Modal } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
@@ -17,6 +17,8 @@ export default function NotificationsManagement() {
     const router = useRouter();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const fetchNotifications = async () => {
         try {
@@ -98,6 +100,15 @@ export default function NotificationsManagement() {
                             <View style={styles.cardHeader}>
                                 <Text style={styles.cardTitle}>{notif.title}</Text>
                                 <View style={styles.actionButtons}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setSelectedNotification(notif);
+                                            setModalVisible(true);
+                                        }}
+                                        style={styles.iconBtn}
+                                    >
+                                        <MaterialIcons name="visibility" size={20} color="#636e72" />
+                                    </TouchableOpacity>
                                     <TouchableOpacity onPress={() => deleteNotification(notif.id)} style={styles.iconBtn}>
                                         <MaterialIcons name="delete" size={20} color="#e74c3c" />
                                     </TouchableOpacity>
@@ -120,7 +131,57 @@ export default function NotificationsManagement() {
                     <Text style={{ textAlign: 'center', marginVertical: 20, color: '#888' }}>No notifications sent yet.</Text>
                 )}
             </View>
-        </ScrollView>
+
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Notification Details</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <MaterialIcons name="close" size={24} color="#636e72" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {selectedNotification && (
+                            <View style={styles.modalBody}>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Title:</Text>
+                                    <Text style={styles.detailValue}>{selectedNotification.title}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Type:</Text>
+                                    <View style={styles.badge}>
+                                        <Text style={styles.badgeText}>{selectedNotification.type || 'ALERT'}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Date:</Text>
+                                    <Text style={styles.detailValue}>{new Date(selectedNotification.created_at).toLocaleString()}</Text>
+                                </View>
+                                {selectedNotification.username && (
+                                    <View style={styles.detailRow}>
+                                        <Text style={styles.detailLabel}>To:</Text>
+                                        <Text style={styles.detailValue}>{selectedNotification.username}</Text>
+                                    </View>
+                                )}
+                                <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
+                                    <Text style={styles.detailLabel}>Message:</Text>
+                                </View>
+                                <View style={{ padding: 12, backgroundColor: '#F7F9FC', borderRadius: 8 }}>
+                                    <Text style={{ color: '#2D3436', lineHeight: 22 }}>{selectedNotification.body}</Text>
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        </ScrollView >
     );
 }
 
@@ -219,5 +280,60 @@ const styles = StyleSheet.create({
     recipient: {
         fontSize: 12,
         color: '#888',
-    }
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContent: {
+        backgroundColor: '#FFF',
+        borderRadius: 16,
+        padding: 24,
+        width: '100%',
+        maxWidth: 500,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+        paddingBottom: 16,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2D3436',
+    },
+    modalBody: {
+        gap: 12,
+    },
+    detailRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#FAFAFA',
+        paddingBottom: 12,
+        marginBottom: 4,
+        alignItems: 'center',
+    },
+    detailLabel: {
+        width: 80,
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#636e72',
+    },
+    detailValue: {
+        flex: 1,
+        fontSize: 14,
+        color: '#2D3436',
+    },
 });

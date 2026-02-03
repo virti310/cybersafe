@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Image, Platform, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
@@ -18,6 +18,8 @@ export default function AwarenessManagement() {
     const [articles, setArticles] = useState<AwarenessArticle[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedArticle, setSelectedArticle] = useState<AwarenessArticle | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const fetchArticles = async () => {
         try {
@@ -111,6 +113,14 @@ export default function AwarenessManagement() {
                                 {new Date(article.created_at).toLocaleDateString()}
                             </Text>
                             <View style={{ flex: 1, flexDirection: 'row', gap: 10 }}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setSelectedArticle(article);
+                                        setModalVisible(true);
+                                    }}
+                                >
+                                    <MaterialIcons name="visibility" size={20} color="#636e72" />
+                                </TouchableOpacity>
                                 <TouchableOpacity onPress={() => router.push({ pathname: '/admin/add-awareness', params: { id: article.id } })}>
                                     <MaterialIcons name="edit" size={20} color="#6C5CE7" />
                                 </TouchableOpacity>
@@ -124,8 +134,44 @@ export default function AwarenessManagement() {
                 {!loading && filteredArticles.length === 0 && (
                     <Text style={{ textAlign: 'center', marginVertical: 20, color: '#888' }}>No articles found.</Text>
                 )}
+
             </View>
-        </ScrollView>
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Article Details</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <MaterialIcons name="close" size={24} color="#636e72" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {selectedArticle && (
+                            <ScrollView style={styles.modalBody}>
+                                <Text style={styles.articleTitle}>{selectedArticle.title}</Text>
+                                <Text style={styles.articleDate}>{new Date(selectedArticle.created_at).toLocaleDateString()}</Text>
+
+                                {selectedArticle.image && (
+                                    <Image
+                                        source={{ uri: selectedArticle.image }}
+                                        style={styles.articleImage}
+                                        resizeMode="cover"
+                                    />
+                                )}
+
+                                <Text style={styles.articleContent}>{selectedArticle.content}</Text>
+                            </ScrollView>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        </ScrollView >
     );
 }
 
@@ -202,5 +248,65 @@ const styles = StyleSheet.create({
     td: {
         color: '#2D3436',
         fontSize: 14,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContent: {
+        backgroundColor: '#FFF',
+        borderRadius: 16,
+        padding: 24,
+        width: '100%',
+        maxWidth: 600,
+        maxHeight: '80%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+        paddingBottom: 16,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2D3436',
+    },
+    modalBody: {
+        flex: 1,
+    },
+    articleTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#2D3436',
+        marginBottom: 8,
+    },
+    articleDate: {
+        fontSize: 12,
+        color: '#b2bec3',
+        marginBottom: 16,
+    },
+    articleImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 16,
+        backgroundColor: '#f0f0f0',
+    },
+    articleContent: {
+        fontSize: 14,
+        color: '#636e72',
+        lineHeight: 22,
     },
 });

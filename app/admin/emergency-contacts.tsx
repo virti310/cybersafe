@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Platform, Modal } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
@@ -20,6 +20,8 @@ export default function EmergencyContactsManagement() {
     const [contacts, setContacts] = useState<EmergencyContact[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedContact, setSelectedContact] = useState<EmergencyContact | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const fetchContacts = async () => {
         try {
@@ -113,6 +115,14 @@ export default function EmergencyContactsManagement() {
                             <Text style={[styles.td, { flex: 1.5 }]}>{contact.phone}</Text>
                             <Text style={[styles.td, { flex: 1.5 }]}>{contact.location}</Text>
                             <View style={{ flex: 1, flexDirection: 'row', gap: 10 }}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setSelectedContact(contact);
+                                        setModalVisible(true);
+                                    }}
+                                >
+                                    <MaterialIcons name="visibility" size={20} color="#636e72" />
+                                </TouchableOpacity>
                                 <TouchableOpacity onPress={() => router.push({ pathname: '/admin/add-emergency-contact', params: { id: contact.id } })}>
                                     <MaterialIcons name="edit" size={20} color="#6C5CE7" />
                                 </TouchableOpacity>
@@ -127,7 +137,59 @@ export default function EmergencyContactsManagement() {
                     <Text style={{ textAlign: 'center', marginVertical: 20, color: '#888' }}>No contacts found.</Text>
                 )}
             </View>
-        </ScrollView>
+
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Contact Details</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <MaterialIcons name="close" size={24} color="#636e72" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {selectedContact && (
+                            <View style={styles.modalBody}>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Team/Name:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.team}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Priority:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.priority}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Phone:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.phone}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Email:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.email || 'N/A'}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Availability:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.availability}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Location:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.location}</Text>
+                                </View>
+                                <View style={styles.detailRow}>
+                                    <Text style={styles.detailLabel}>Description:</Text>
+                                    <Text style={styles.detailValue}>{selectedContact.description || 'N/A'}</Text>
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        </ScrollView >
     );
 }
 
@@ -204,5 +266,58 @@ const styles = StyleSheet.create({
     td: {
         color: '#2D3436',
         fontSize: 14,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContent: {
+        backgroundColor: '#FFF',
+        borderRadius: 16,
+        padding: 24,
+        width: '100%',
+        maxWidth: 500,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+        paddingBottom: 16,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2D3436',
+    },
+    modalBody: {
+        gap: 16,
+    },
+    detailRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#FAFAFA',
+        paddingBottom: 12,
+    },
+    detailLabel: {
+        width: 100,
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#636e72',
+    },
+    detailValue: {
+        flex: 1,
+        fontSize: 14,
+        color: '#2D3436',
     },
 });

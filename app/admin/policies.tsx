@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Platform, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
@@ -14,6 +14,8 @@ export default function PoliciesList() {
     const router = useRouter();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const fetchPolicies = async () => {
         try {
@@ -91,6 +93,15 @@ export default function PoliciesList() {
                                 <View style={styles.actions}>
                                     <TouchableOpacity
                                         style={styles.actionBtn}
+                                        onPress={() => {
+                                            setSelectedPolicy(policy);
+                                            setModalVisible(true);
+                                        }}
+                                    >
+                                        <MaterialIcons name="visibility" size={20} color="#636e72" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.actionBtn}
                                         onPress={() => router.push({ pathname: '/admin/add-edit-policy', params: { id: policy.id } })}
                                     >
                                         <MaterialIcons name="edit" size={20} color="#6C5CE7" />
@@ -113,7 +124,33 @@ export default function PoliciesList() {
                     </Text>
                 )}
             </View>
-        </ScrollView>
+
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Policy Details</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <MaterialIcons name="close" size={24} color="#636e72" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {selectedPolicy && (
+                            <ScrollView style={styles.modalBody}>
+                                <Text style={styles.policyTitle}>{selectedPolicy.title}</Text>
+                                <Text style={styles.policyContent}>{selectedPolicy.content}</Text>
+                            </ScrollView>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        </ScrollView >
     );
 }
 
@@ -188,5 +225,53 @@ const styles = StyleSheet.create({
         color: '#636e72',
         fontSize: 14,
         lineHeight: 20,
-    }
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContent: {
+        backgroundColor: '#FFF',
+        borderRadius: 16,
+        padding: 24,
+        width: '100%',
+        maxWidth: 600,
+        maxHeight: '80%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+        paddingBottom: 16,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2D3436',
+    },
+    modalBody: {
+        flex: 1,
+    },
+    policyTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#2D3436',
+        marginBottom: 12,
+    },
+    policyContent: {
+        fontSize: 14,
+        color: '#2D3436',
+        lineHeight: 24,
+    },
 });
