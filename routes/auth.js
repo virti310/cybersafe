@@ -34,8 +34,8 @@ router.post('/register', async (req, res) => {
         // Let's try inserting all. If it errors, we'll know.
 
         const newUser = await dbPool.query(
-            'INSERT INTO users (username, email, password, phone, gender, birthdate) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, email, phone, gender, birthdate',
-            [name, email, hashedPassword, phone, gender, birthdate]
+            'INSERT INTO users (username, email, password, phone, gender, birthdate, role) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, username, email, phone, gender, birthdate, role',
+            [name, email, hashedPassword, phone, gender, birthdate, 'user']
         );
 
         // Generate Token
@@ -73,9 +73,20 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Invalid Credentials' });
         }
 
+        // Check Suspension
+        const userData = user.rows[0];
+        if (userData.suspension_end_time) {
+            const now = new Date();
+            const suspendedUntil = new Date(userData.suspension_end_time);
+
+            if (now < suspendedUntil) {
+                return res.status(403).json({ error: `Account suspended until ${suspendedUntil.toLocaleTimeString()}` });
+            }
+        }
+
         const token = jwt.sign({ id: user.rows[0].id }, JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({ token, user: { id: user.rows[0].id, username: user.rows[0].username, email: user.rows[0].email } });
+        res.json({ token, user: { id: user.rows[0].id, username: user.rows[0].username, email: user.rows[0].email, role: user.rows[0].role } });
 
     } catch (err) {
         console.error(err.message);

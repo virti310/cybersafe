@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbPool = require('../db');
+const sendEmail = require('../utils/emailService');
 
 // GET all users
 router.get('/', async (req, res) => {
@@ -70,6 +71,36 @@ router.put('/:id/status', async (req, res) => {
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = result.rows[0];
+
+        // Handle suspension logic
+        if (Number(is_active) === 0) {
+            // DEACTIVATE -> Suspend for 30 mins
+            const suspensionTime = new Date(Date.now() + 30 * 60000); // 30 minutes from now
+            await dbPool.query('UPDATE users SET suspension_end_time = $1 WHERE id = $2', [suspensionTime, id]);
+
+            // Send Email
+            const emailSubject = "Account Suspended";
+            const emailBody = `Your account has been deactivated by the admin. You are suspended for 30 minutes until ${suspensionTime.toLocaleString()}. Access will be restricted during this time.`;
+            // Retrieve email for notification (updated query below)
+            const userEmailRes = await dbPool.query('SELECT email FROM users WHERE id = $1', [id]);
+            if (userEmailRes.rows.length > 0) {
+                await sendEmail(userEmailRes.rows[0].email, emailSubject, emailBody);
+            }
+
+        } else {
+            // ACTIVATE -> Clear suspension
+            await dbPool.query('UPDATE users SET suspension_end_time = NULL WHERE id = $1', [id]);
+
+            // Send Email
+            const emailSubject = "Account Reactivated";
+            const emailBody = "Your account has been reactivated by the admin. You can now login.";
+            const userEmailRes = await dbPool.query('SELECT email FROM users WHERE id = $1', [id]);
+            if (userEmailRes.rows.length > 0) {
+                await sendEmail(userEmailRes.rows[0].email, emailSubject, emailBody);
+            }
         }
 
         res.json({ message: 'User status updated', user: result.rows[0] });

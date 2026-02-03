@@ -37,7 +37,7 @@ export default function Login() {
                 await AsyncStorage.setItem('userToken', data.token);
                 await AsyncStorage.setItem('userData', JSON.stringify(data.user));
 
-                if (email.toLowerCase().includes('admin')) {
+                if (data.user.role === 'admin') {
                     router.replace('/admin' as any);
                 } else {
                     router.replace('/');
