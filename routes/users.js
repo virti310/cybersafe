@@ -75,28 +75,27 @@ router.put('/:id/status', async (req, res) => {
 
         const user = result.rows[0];
 
-        // Handle suspension logic
+        // Handle deactivation logic
         if (Number(is_active) === 0) {
-            // DEACTIVATE -> Suspend for 30 mins
-            const suspensionTime = new Date(Date.now() + 30 * 60000); // 30 minutes from now
-            await dbPool.query('UPDATE users SET suspension_end_time = $1 WHERE id = $2', [suspensionTime, id]);
+            // DEACTIVATE -> Only send email, do not set suspension time
 
             // Send Email
-            const emailSubject = "Account Suspended";
-            const emailBody = `Your account has been deactivated by the admin. You are suspended for 30 minutes until ${suspensionTime.toLocaleString()}. Access will be restricted during this time.`;
-            // Retrieve email for notification (updated query below)
+            const emailSubject = "Account Deactivated";
+            const emailBody = `Your account has been deactivated by the admin. You can still login, but you will not be able to submit new reports. Please contact support via email at cybersafe1900@gmail.com if you believe this is a mistake.`;
+
+            // Retrieve email for notification
             const userEmailRes = await dbPool.query('SELECT email FROM users WHERE id = $1', [id]);
             if (userEmailRes.rows.length > 0) {
                 await sendEmail(userEmailRes.rows[0].email, emailSubject, emailBody);
             }
 
         } else {
-            // ACTIVATE -> Clear suspension
+            // ACTIVATE -> Clear any legacy suspension if present (optional but good cleanup)
             await dbPool.query('UPDATE users SET suspension_end_time = NULL WHERE id = $1', [id]);
 
             // Send Email
             const emailSubject = "Account Reactivated";
-            const emailBody = "Your account has been reactivated by the admin. You can now login.";
+            const emailBody = "Your account has been reactivated by the admin. You can now submit reports again.";
             const userEmailRes = await dbPool.query('SELECT email FROM users WHERE id = $1', [id]);
             if (userEmailRes.rows.length > 0) {
                 await sendEmail(userEmailRes.rows[0].email, emailSubject, emailBody);

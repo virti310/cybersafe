@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -36,49 +36,7 @@ export default function AdminReportDetails() {
         }
     };
 
-    const updateStatus = async (newStatus: string) => {
-        setUpdating(true);
-        try {
-            const response = await fetch(`${API_URL}/reports/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: newStatus }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setReport(data);
-                Alert.alert('Success', `Status updated to ${newStatus}`);
-            } else {
-                Alert.alert('Error', 'Failed to update status');
-            }
-        } catch (error) {
-            console.error('Error updating status:', error);
-            Alert.alert('Error', 'Network error');
-        } finally {
-            setUpdating(false);
-        }
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'resolved': return '#2ecc71';
-            case 'rejected': return '#e74c3c';
-            case 'in progress': return '#3498db';
-            default: return '#f1c40f'; // Pending
-        }
-    };
-
-    const getStatusBgColor = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'resolved': return '#e8f8f5';
-            case 'rejected': return '#fdedec';
-            case 'in progress': return '#ebf5fb';
-            default: return '#fef9e7'; // Pending
-        }
-    };
+    // Removed status update logic as per requirement
 
     if (loading) {
         return (
@@ -101,14 +59,7 @@ export default function AdminReportDetails() {
 
             <ScrollView contentContainerStyle={styles.content}>
                 {/* Status Card */}
-                <View style={styles.statusCard}>
-                    <Text style={styles.statusLabel}>Current Status</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: getStatusBgColor(report.status) }]}>
-                        <Text style={[styles.statusText, { color: getStatusColor(report.status) }]}>
-                            {report.status || 'Pending'}
-                        </Text>
-                    </View>
-                </View>
+                {/* Status Card Removed */}
 
                 {/* Main Details */}
                 <View style={styles.section}>
@@ -151,9 +102,18 @@ export default function AdminReportDetails() {
                 )}
 
                 {/* Suspect Details */}
-                {(report.suspect_mobile || report.suspect_email || report.suspect_url) && (
+                {(report.suspect_mobile || report.suspect_email || report.suspect_url || report.suspect_photo_path) && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Suspect Information</Text>
+                        {report.suspect_photo_path && (
+                            <View style={[styles.detailRow, { marginBottom: 20, justifyContent: 'center' }]}>
+                                <Image
+                                    source={{ uri: `${API_URL}/${report.suspect_photo_path.replace(/\\/g, '/')}` }}
+                                    style={styles.suspectPhotoLarge}
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        )}
                         {report.suspect_url && (
                             <View style={styles.detailRow}>
                                 <Text style={styles.label}>URL:</Text>
@@ -176,37 +136,7 @@ export default function AdminReportDetails() {
                 )}
 
                 {/* Admin Actions */}
-                <View style={styles.actionSection}>
-                    <Text style={styles.sectionTitle}>Admin Actions</Text>
-                    <Text style={styles.actionLabel}>Update Status:</Text>
-
-                    <View style={styles.actionButtons}>
-                        <TouchableOpacity
-                            style={[styles.actionBtn, { borderColor: '#3498db', backgroundColor: report.status === 'In Progress' ? '#3498db' : 'transparent' }]}
-                            onPress={() => updateStatus('In Progress')}
-                            disabled={updating}
-                        >
-                            <Text style={[styles.actionBtnText, { color: report.status === 'In Progress' ? '#FFF' : '#3498db' }]}>In Progress</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.actionBtn, { borderColor: '#2ecc71', backgroundColor: report.status === 'Resolved' ? '#2ecc71' : 'transparent' }]}
-                            onPress={() => updateStatus('Resolved')}
-                            disabled={updating}
-                        >
-                            <Text style={[styles.actionBtnText, { color: report.status === 'Resolved' ? '#FFF' : '#2ecc71' }]}>Resolve</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.actionBtn, { borderColor: '#e74c3c', backgroundColor: report.status === 'Rejected' ? '#e74c3c' : 'transparent' }]}
-                            onPress={() => updateStatus('Rejected')}
-                            disabled={updating}
-                        >
-                            <Text style={[styles.actionBtnText, { color: report.status === 'Rejected' ? '#FFF' : '#e74c3c' }]}>Reject</Text>
-                        </TouchableOpacity>
-                    </View>
-                    {updating && <ActivityIndicator size="small" color={Colors.light.primary} style={{ marginTop: 10 }} />}
-                </View>
+                {/* Admin Actions Removed */}
 
             </ScrollView>
         </SafeAreaView>
@@ -246,34 +176,7 @@ const styles = StyleSheet.create({
         padding: 20,
         paddingBottom: 40,
     },
-    statusCard: {
-        backgroundColor: Colors.light.card,
-        borderRadius: 16,
-        padding: 20,
-        alignItems: 'center',
-        marginBottom: 20,
-        shadowColor: Colors.light.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
-    },
-    statusLabel: {
-        fontSize: 14,
-        color: Colors.light.icon,
-        marginBottom: 8,
-        fontWeight: '600',
-    },
-    statusBadge: {
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        borderRadius: 20,
-        marginBottom: 12,
-    },
-    statusText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+    // Status styles removed
     section: {
         backgroundColor: Colors.light.card,
         borderRadius: 16,
@@ -331,34 +234,10 @@ const styles = StyleSheet.create({
         width: '48%',
         marginBottom: 15,
     },
-    actionSection: {
-        backgroundColor: '#FFF',
-        borderRadius: 16,
-        padding: 20,
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
-    },
-    actionLabel: {
-        fontSize: 14,
-        color: '#64748B',
-        marginBottom: 12,
-    },
-    actionButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 10,
-    },
-    actionBtn: {
-        flex: 1,
-        paddingVertical: 10,
+    suspectPhotoLarge: {
+        width: '100%',
+        height: 200,
         borderRadius: 8,
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    actionBtnText: {
-        fontSize: 12,
-        fontWeight: 'bold',
+        backgroundColor: '#f1f2f6',
     }
 });

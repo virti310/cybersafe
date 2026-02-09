@@ -134,6 +134,16 @@ export default function DrawerLayout() {
                     }}
                 />
                 <Drawer.Screen
+                    name="community"
+                    options={{
+                        drawerLabel: 'Community Reports',
+                        title: 'Community Reports',
+                        drawerIcon: ({ color, size }) => (
+                            <Feather name="users" size={size} color={color} />
+                        ),
+                    }}
+                />
+                <Drawer.Screen
                     name="emergency-contacts"
                     options={{
                         drawerLabel: 'Emergency Contacts',

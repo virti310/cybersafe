@@ -1,4 +1,12 @@
-Tables found: reports, faqs, awareness, users, notifications, policies, emergency_contacts, recovery_guides, categories
+Tables found: faqs, reports, awareness, notifications, users, policies, emergency_contacts, recovery_guides, categories
+
+Schema for faqs:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+question | text | NO
+answer | text | NO
+created_at | timestamp without time zone | YES
 
 Schema for reports:
 column_name | data_type | is_nullable
@@ -18,14 +26,9 @@ suspect_email | text | YES
 created_at | timestamp without time zone | YES
 user_id | integer | YES
 status | text | YES
-
-Schema for faqs:
-column_name | data_type | is_nullable
----|---|---
-id | integer | NO
-question | text | NO
-answer | text | NO
-created_at | timestamp without time zone | YES
+national_id_path | text | YES
+evidence_path | text | YES
+suspect_photo_path | text | YES
 
 Schema for awareness:
 column_name | data_type | is_nullable
@@ -36,20 +39,6 @@ content | text | NO
 created_at | timestamp without time zone | YES
 updated_at | timestamp without time zone | YES
 image | text | YES
-
-Schema for users:
-column_name | data_type | is_nullable
----|---|---
-id | integer | NO
-username | text | NO
-email | text | NO
-password | character | NO
-created_at | timestamp without time zone | YES
-phone | character varying | YES
-gender | text | YES
-reset_otp | text | YES
-otp_expiry | timestamp without time zone | YES
-is_active | integer | YES
 
 Schema for notifications:
 column_name | data_type | is_nullable
@@ -65,6 +54,23 @@ status | text | YES
 metadata | jsonb | YES
 created_at | timestamp without time zone | YES
 updated_at | timestamp without time zone | YES
+
+Schema for users:
+column_name | data_type | is_nullable
+---|---|---
+id | integer | NO
+username | text | NO
+email | text | NO
+password | character | NO
+created_at | timestamp without time zone | YES
+phone | character varying | YES
+gender | text | YES
+reset_otp | text | YES
+otp_expiry | timestamp without time zone | YES
+is_active | integer | YES
+birthdate | date | YES
+role | character varying | YES
+suspension_end_time | timestamp without time zone | YES
 
 Schema for policies:
 column_name | data_type | is_nullable

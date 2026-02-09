@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import API_URL from '../../constants/API';
@@ -12,6 +12,7 @@ interface Report {
     incident_date: string;
     created_at: string;
     status: string;
+    suspect_photo_path?: string;
 }
 
 export default function ReportsManagement() {
@@ -97,38 +98,44 @@ export default function ReportsManagement() {
 
                 <View style={styles.tableHeader}>
                     <Text style={[styles.th, { flex: 0.5 }]}>ID</Text>
-                    <Text style={[styles.th, { flex: 2.5 }]}>Incident Type</Text>
+                    <Text style={[styles.th, { flex: 1 }]}>Suspect</Text>
+                    <Text style={[styles.th, { flex: 3 }]}>Incident Type</Text>
                     <Text style={[styles.th, { flex: 1 }]}>Date</Text>
-                    <Text style={[styles.th, { flex: 1.2 }]}>Status</Text>
-                    <Text style={[styles.th, { flex: 0.8 }]}>Actions</Text>
+                    <Text style={[styles.th, { flex: 0.5, textAlign: 'center' }]}>View</Text>
                 </View>
 
                 {loading ? (
                     <ActivityIndicator size="large" color={Colors.light.primary} style={{ marginTop: 20 }} />
                 ) : (
                     filteredReports.map((report) => (
-                        <View key={report.id} style={styles.tableRow}>
+                        <TouchableOpacity
+                            key={report.id}
+                            style={styles.tableRow}
+                            onPress={() => router.push(`/(drawer)/../admin/report-details/${report.id}` as any)}
+                        >
                             <Text style={[styles.td, { flex: 0.5 }]}>#{report.id}</Text>
-                            <View style={{ flex: 2.5 }}>
+                            <View style={{ flex: 1, justifyContent: 'center' }}>
+                                {report.suspect_photo_path ? (
+                                    <Image
+                                        source={{ uri: `${API_URL}/${report.suspect_photo_path.replace(/\\/g, '/')}` }}
+                                        style={styles.suspectImage}
+                                        resizeMode="cover"
+                                    />
+                                ) : (
+                                    <View style={styles.placeholderImage}>
+                                        <MaterialIcons name="person" size={20} color="#bdc3c7" />
+                                    </View>
+                                )}
+                            </View>
+                            <View style={{ flex: 3 }}>
                                 <Text style={[styles.td, { fontWeight: '600' }]}>{report.incident_type || 'General'}</Text>
                                 <Text style={styles.subtext} numberOfLines={1}>{report.incident_details}</Text>
                             </View>
                             <Text style={[styles.td, { flex: 1 }]}>{new Date(report.incident_date || report.created_at).toLocaleDateString()}</Text>
-                            <View style={{ flex: 1.2 }}>
-                                <View style={[styles.statusBadge, {
-                                    backgroundColor: getStatusBgColor(report.status),
-                                }]}>
-                                    <Text style={{ color: getStatusColor(report.status), fontWeight: 'bold', fontSize: 11 }}>
-                                        {report.status || 'Pending'}
-                                    </Text>
-                                </View>
+                            <View style={{ flex: 0.5, alignItems: 'center', justifyContent: 'center' }}>
+                                <MaterialIcons name="visibility" size={20} color={Colors.light.primary} />
                             </View>
-                            <View style={{ flex: 0.8, flexDirection: 'row', gap: 10, justifyContent: 'center' }}>
-                                <TouchableOpacity onPress={() => router.push(`/(drawer)/../admin/report-details/${report.id}` as any)}>
-                                    <MaterialIcons name="visibility" size={22} color="#636e72" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        </TouchableOpacity>
                     ))
                 )}
 
@@ -223,5 +230,19 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 12,
         alignSelf: 'flex-start',
+    },
+    suspectImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 4,
+        backgroundColor: '#eee',
+    },
+    placeholderImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 4,
+        backgroundColor: '#f1f2f6',
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 });

@@ -62,23 +62,7 @@ export default function MyReports() {
         fetchReports();
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'resolved': return Colors.light.success;
-            case 'in progress': return Colors.light.primary;
-            case 'rejected': return Colors.light.error;
-            default: return '#D97706'; // Pending (Orange)
-        }
-    };
 
-    const getStatusBgColor = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'resolved': return '#DCFCE7';
-            case 'in progress': return '#DBEAFE';
-            case 'rejected': return '#FEE2E2';
-            default: return '#FEF3C7'; // Pending
-        }
-    };
 
     const renderItem = ({ item }: { item: any }) => (
         <TouchableOpacity
@@ -94,11 +78,6 @@ export default function MyReports() {
                     <Text style={styles.cardTitle}>{item.incident_type || 'Incident Report'}</Text>
                     <Text style={styles.date}>{item.incident_date}</Text>
                 </View>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusBgColor(item.status) }]}>
-                    <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
-                        {item.status || 'Pending'}
-                    </Text>
-                </View>
             </View>
 
             <Text style={styles.details} numberOfLines={2}>
@@ -113,7 +92,7 @@ export default function MyReports() {
             )}
 
             <View style={styles.detailsButton}>
-                <Text style={styles.detailsButtonText}>View Status</Text>
+                <Text style={styles.detailsButtonText}>View Details</Text>
                 <MaterialIcons name="arrow-forward" size={16} color={Colors.light.primary} />
             </View>
         </TouchableOpacity>

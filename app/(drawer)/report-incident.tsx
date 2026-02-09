@@ -7,12 +7,19 @@ import { Colors } from '../../constants/theme';
 import API_URL from '../../constants/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import * as ImagePicker from 'expo-image-picker';
+
 export default function ReportIncident() {
     const router = useRouter();
 
     // Mandatory State
     const [incidentDate, setIncidentDate] = useState('');
     const [incidentDetails, setIncidentDetails] = useState('');
+
+    // Image State
+    // Removed National ID state as per requirement
+    const [evidenceImage, setEvidenceImage] = useState<string | null>(null);
+    const [suspectPhotoImage, setSuspectPhotoImage] = useState<string | null>(null);
 
     // Financial Fraud State
     const [isFinancialFraud, setIsFinancialFraud] = useState(false);
@@ -25,6 +32,19 @@ export default function ReportIncident() {
     const [suspectUrl, setSuspectUrl] = useState('');
     const [suspectMobile, setSuspectMobile] = useState('');
     const [suspectEmail, setSuspectEmail] = useState('');
+
+    const pickImage = async (setImage: (uri: string | null) => void) => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+        }
+    };
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [userId, setUserId] = useState<number | null>(null);
@@ -115,27 +135,47 @@ export default function ReportIncident() {
 
         setIsSubmitting(true);
         try {
-            const payload = {
-                user_id: userId,
-                incident_date: incidentDate,
-                incident_details: incidentDetails,
-                incident_type: incidentType,
-                is_financial_fraud: isFinancialFraud,
-                bank_name: isFinancialFraud ? bankName : null,
-                transaction_id: isFinancialFraud ? transactionId : null,
-                transaction_date: isFinancialFraud ? transactionDate : null,
-                fraud_amount: isFinancialFraud ? fraudAmount : null,
-                suspect_url: suspectUrl,
-                suspect_mobile: suspectMobile,
-                suspect_email: suspectEmail
-            };
+            const formData = new FormData();
+            formData.append('user_id', String(userId));
+            formData.append('incident_date', incidentDate);
+            formData.append('incident_details', incidentDetails);
+            formData.append('incident_type', incidentType);
+            formData.append('is_financial_fraud', String(isFinancialFraud));
+
+            if (isFinancialFraud) {
+                formData.append('bank_name', bankName || '');
+                formData.append('transaction_id', transactionId || '');
+                formData.append('transaction_date', transactionDate || '');
+                formData.append('fraud_amount', fraudAmount || '');
+            }
+
+            formData.append('suspect_url', suspectUrl || '');
+            formData.append('suspect_mobile', suspectMobile || '');
+            formData.append('suspect_email', suspectEmail || '');
+
+            formData.append('suspect_email', suspectEmail || '');
+
+            // Removed National ID append logic
+
+            if (evidenceImage) {
+                const filename = evidenceImage.split('/').pop();
+                const match = /\.(\w+)$/.exec(filename || '');
+                const type = match ? `image/${match[1]}` : `image`;
+                formData.append('evidence', { uri: evidenceImage, name: filename, type } as any);
+            }
+
+            if (suspectPhotoImage) {
+                const filename = suspectPhotoImage.split('/').pop();
+                const match = /\.(\w+)$/.exec(filename || '');
+                const type = match ? `image/${match[1]}` : `image`;
+                formData.append('suspect_photo', { uri: suspectPhotoImage, name: filename, type } as any);
+            }
+
 
             const response = await fetch(`${API_URL}/reports`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
+                // Let fetch handle the Content-Type header with the boundary
+                body: formData,
             });
 
             const data = await response.json();
@@ -174,7 +214,11 @@ export default function ReportIncident() {
 
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                 <Text style={styles.pageSubtitle}>
-                    Please provide accurate details to help with the investigation.
+                    Please provide accurate details
+                    {'\n'}
+                    <Text style={{ fontWeight: 'bold', color: Colors.light.error, fontSize: 13 }}>
+                        Note: This record is for only for records.
+                    </Text>
                 </Text>
 
                 {/* Mandatory Information */}
@@ -223,13 +267,7 @@ export default function ReportIncident() {
                         </Text>
                     </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>4. National ID (Upload) <Text style={styles.required}>*</Text></Text>
-                        <TouchableOpacity style={styles.uploadButton}>
-                            <Feather name="upload-cloud" size={24} color={Colors.light.primary} />
-                            <Text style={styles.uploadText}>Select ID Image (.jpg, .png)</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {/* National ID section removed as per requirement */}
                 </View>
 
                 {/* Financial Fraud Section */}
@@ -270,9 +308,11 @@ export default function ReportIncident() {
 
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Evidence (Upload)</Text>
-                                <TouchableOpacity style={styles.uploadButton}>
-                                    <Feather name="file-text" size={24} color={Colors.light.primary} />
-                                    <Text style={styles.uploadText}>Upload Screenshots/Receipts</Text>
+                                <TouchableOpacity style={styles.uploadButton} onPress={() => pickImage(setEvidenceImage)}>
+                                    <Feather name={evidenceImage ? "check-circle" : "file-text"} size={24} color={evidenceImage ? Colors.light.success : Colors.light.primary} />
+                                    <Text style={[styles.uploadText, evidenceImage && { color: Colors.light.success }]}>
+                                        {evidenceImage ? "Evidence Image Selected" : "Upload Screenshots/Receipts"}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -301,9 +341,11 @@ export default function ReportIncident() {
 
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Suspect Photograph</Text>
-                        <TouchableOpacity style={styles.uploadButton}>
-                            <Feather name="image" size={24} color={Colors.light.primary} />
-                            <Text style={styles.uploadText}>Upload Suspect Photo</Text>
+                        <TouchableOpacity style={styles.uploadButton} onPress={() => pickImage(setSuspectPhotoImage)}>
+                            <Feather name={suspectPhotoImage ? "check-circle" : "image"} size={24} color={suspectPhotoImage ? Colors.light.success : Colors.light.primary} />
+                            <Text style={[styles.uploadText, suspectPhotoImage && { color: Colors.light.success }]}>
+                                {suspectPhotoImage ? "Photo Selected" : "Upload Suspect Photo"}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>

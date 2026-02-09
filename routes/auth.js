@@ -73,16 +73,8 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Invalid Credentials' });
         }
 
-        // Check Suspension
+        // Check Suspension removed - Deactivated users can login but cannot report
         const userData = user.rows[0];
-        if (userData.suspension_end_time) {
-            const now = new Date();
-            const suspendedUntil = new Date(userData.suspension_end_time);
-
-            if (now < suspendedUntil) {
-                return res.status(403).json({ error: `Account suspended until ${suspendedUntil.toLocaleTimeString()}` });
-            }
-        }
 
         const token = jwt.sign({ id: user.rows[0].id }, JWT_SECRET, { expiresIn: '1h' });
 

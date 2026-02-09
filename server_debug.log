@@ -1,0 +1,26 @@
+[2026-02-09T13:16:22.734Z] POST /reports hit
+[2026-02-09T13:16:22.739Z] Body Check: {"user_id":"3","incident_date":"12345","incident_details":"wsedfghnbvswertghnbvcdxertgyhjnbvcdxertyhnbvcdfrghnb","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"","suspect_mobile":"","suspect_email":["",""]}
+[2026-02-09T13:16:22.776Z] Files - Evidence: null, Suspect Photo: null
+[2026-02-09T13:16:22.955Z] User 3 active status: 1
+[2026-02-09T13:16:22.960Z] CRITICAL ERROR creating report: incident_date is not defined
+[2026-02-09T13:16:22.961Z] Stack: ReferenceError: incident_date is not defined
+    at C:\Users\VIRTI\Desktop\cybersafeapplication\cybersafeapp\routes\reports.js:103:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-02-09T13:17:01.691Z] POST /reports hit
+[2026-02-09T13:17:01.692Z] Body Check: {"user_id":"3","incident_date":"12/2/25","incident_details":"sdfghjkbvzsdrtyujmncdfghjkmvcfghujkmnbvcfgyujjikmnbvcftyujnbv","incident_type":"Device Compromise","is_financial_fraud":"false","suspect_url":"","suspect_mobile":"","suspect_email":["",""]}
+[2026-02-09T13:17:01.726Z] Files - Evidence: null, Suspect Photo: null
+[2026-02-09T13:17:01.841Z] User 3 active status: 1
+[2026-02-09T13:17:01.842Z] CRITICAL ERROR creating report: incident_date is not defined
+[2026-02-09T13:17:01.843Z] Stack: ReferenceError: incident_date is not defined
+    at C:\Users\VIRTI\Desktop\cybersafeapplication\cybersafeapp\routes\reports.js:103:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-02-09T13:20:31.106Z] POST /reports hit
+[2026-02-09T13:20:31.107Z] Body Check: {"user_id":"3","incident_date":"12/2/25","incident_details":"sdfghjkbvzsdrtyujmncdfghjkmvcfghujkmnbvcfgyujjikmnbvcftyujnbv","incident_type":"Device Compromise","is_financial_fraud":"false","suspect_url":"","suspect_mobile":"","suspect_email":["",""]}
+[2026-02-09T13:20:31.109Z] Files - Evidence: null, Suspect Photo: null
+[2026-02-09T13:20:31.193Z] User 3 active status: 1
+[2026-02-09T13:20:31.204Z] Report created successfully: ID 10
+[2026-02-09T13:21:23.950Z] POST /reports hit
+[2026-02-09T13:21:23.951Z] Body Check: {"user_id":"3","incident_date":"12/2/25","incident_details":"sdfghjkbvzsdrtyujmncdfghjkmvcfghujkmnbvcfgyujjikmnbvcftyujnbv","incident_type":"Device Compromise","is_financial_fraud":"false","suspect_url":"","suspect_mobile":"","suspect_email":["",""]}
+[2026-02-09T13:21:23.952Z] Files - Evidence: null, Suspect Photo: null
+[2026-02-09T13:21:23.990Z] User 3 active status: 0
+[2026-02-09T13:21:23.991Z] User 3 is deactivated. Blocking report.
