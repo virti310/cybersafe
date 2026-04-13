@@ -1,0 +1,46 @@
+[2026-04-13T04:54:46.971Z] POST /reports hit
+[2026-04-13T04:54:46.976Z] Body Check: {"user_id":"10","incident_date":"13/04/2026","incident_details":"My Instagram account was compromised after I clicked on a suspicious phishing link that appeared to be from Instagram. The link redirected me to a fake login page where my credentials were stolen. Unauthorized access was gained, and my account details were changed without my permission.","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"http://instagram-security-login.xyz","suspect_mobile":"","suspect_email":["",""]}
+[2026-04-13T04:54:46.988Z] Files - Evidence: null, Suspect Photo: null
+[2026-04-13T04:54:47.148Z] User 10 active status: 1
+[2026-04-13T04:54:47.152Z] CRITICAL ERROR creating report: duplicate key value violates unique constraint "reports_pkey"
+[2026-04-13T04:54:47.153Z] Stack: error: duplicate key value violates unique constraint "reports_pkey"
+    at C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\routes\reports.js:127:24
+[2026-04-13T04:54:56.645Z] POST /reports hit
+[2026-04-13T04:54:56.646Z] Body Check: {"user_id":"10","incident_date":"13/04/2026","incident_details":"My Instagram account was compromised after I clicked on a suspicious phishing link that appeared to be from Instagram. The link redirected me to a fake login page where my credentials were stolen. Unauthorized access was gained, and my account details were changed without my permission.","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"http://instagram-security-login.xyz","suspect_mobile":"","suspect_email":["",""]}
+[2026-04-13T04:54:56.648Z] Files - Evidence: null, Suspect Photo: null
+[2026-04-13T04:54:56.806Z] User 10 active status: 1
+[2026-04-13T04:54:56.811Z] CRITICAL ERROR creating report: duplicate key value violates unique constraint "reports_pkey"
+[2026-04-13T04:54:56.812Z] Stack: error: duplicate key value violates unique constraint "reports_pkey"
+    at C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\routes\reports.js:127:24
+[2026-04-13T04:55:04.363Z] POST /reports hit
+[2026-04-13T04:55:04.364Z] Body Check: {"user_id":"10","incident_date":"13/04/2026","incident_details":"My Instagram account was compromised after I clicked on a suspicious phishing link that appeared to be from Instagram. The link redirected me to a fake login page where my credentials were stolen. Unauthorized access was gained, and my account details were changed without my permission.","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"http://instagram-security-login.xyz","suspect_mobile":"","suspect_email":["",""]}
+[2026-04-13T04:55:04.366Z] Files - Evidence: null, Suspect Photo: null
+[2026-04-13T04:55:04.526Z] User 10 active status: 1
+[2026-04-13T04:55:04.530Z] CRITICAL ERROR creating report: duplicate key value violates unique constraint "reports_pkey"
+[2026-04-13T04:55:04.530Z] Stack: error: duplicate key value violates unique constraint "reports_pkey"
+    at C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\routes\reports.js:127:24
+[2026-04-13T04:57:52.824Z] POST /reports hit
+[2026-04-13T04:57:52.826Z] Body Check: {"user_id":"10","incident_date":"14/04/2026","incident_details":"My Instagram account was compromised after I clicked on a suspicious phishing link that appeared to be from Instagram. The link redirected me to a fake login page where my credentials were stolen. Unauthorized access was gained, and my account details were changed without my permission.","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"http://instagram-security-login.xyz","suspect_mobile":"","suspect_email":["",""]}
+[2026-04-13T04:57:52.827Z] Files - Evidence: null, Suspect Photo: null
+[2026-04-13T04:57:52.994Z] User 10 active status: 1
+[2026-04-13T04:57:52.997Z] CRITICAL ERROR creating report: duplicate key value violates unique constraint "reports_pkey"
+[2026-04-13T04:57:52.998Z] Stack: error: duplicate key value violates unique constraint "reports_pkey"
+    at C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\ADMIN\Downloads\cybersafe-main\cybersafe-main\routes\reports.js:127:24
+[2026-04-13T05:13:48.929Z] POST /reports hit
+[2026-04-13T05:13:48.930Z] Body Check: {"user_id":"10","incident_date":"13/04/2026 10:43","incident_details":"My Instagram account was compromised after I clicked on a suspicious phishing link that appeared to be from Instagram. The link redirected me to a fake login page where my credentials were stolen. Unauthorized access was gained, and my account details were changed without my permission.","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"https://instagram-security-login.xyz","suspect_mobile":"","suspect_email":["",""]}
+[2026-04-13T05:13:48.935Z] Files - Evidence: null, Suspect Photo: null
+[2026-04-13T05:13:49.052Z] User 10 active status: 1
+[2026-04-13T05:13:49.056Z] Report created successfully: ID 20
+[2026-04-13T05:30:03.959Z] POST /reports hit
+[2026-04-13T05:30:03.971Z] Body Check: {"user_id":"10","incident_date":"13/04/2026","incident_details":"My Instagram account was compromised after I clicked on a suspicious phishing link that appeared to be from Instagram. The link redirected me to a fake login page where my credentials were stolen. Unauthorized access was gained, and my account details were changed without my permission.","incident_type":"Social Media Hack","is_financial_fraud":"false","suspect_url":"https://instagram-security-login.xyz","suspect_mobile":"","suspect_email":["",""]}
+[2026-04-13T05:30:03.975Z] Files - Evidence: null, Suspect Photo: null
+[2026-04-13T05:30:04.152Z] User 10 active status: 1
+[2026-04-13T05:30:04.159Z] Report created successfully: ID 21
